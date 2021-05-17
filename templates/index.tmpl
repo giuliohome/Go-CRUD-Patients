@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    {{ template "head" }}
+    {{ template "styles" }}
+    <body>
+        {{ template "navbar" }}
+        
+        <div class="container">
+            <h1 class="center-text"> {{ .title }} </h1>
+            <br>
+            {{ template "add_user" }}
+            {{ template "edit_user" }}
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Phone Number</th>
+                        <th scope="col">Age</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Users}}
+                    <tr>
+                        <td id="ID-{{.ID}}" >{{.ID}}</td>
+                        <td id="NM-{{.ID}}">{{.Name}}</td>
+                        <td id="LN-{{.ID}}" >{{.LastName}}</td>
+                        <td id="PN-{{.ID}}">{{.PhoneNumber}}</td>
+                        <td id="AG-{{.ID}}">{{.Age}}</td>
+                        <td>
+                            <button id="edit-{{.ID}}" type="button" class="btn btn-warning" onclick="editPatient('{{.ID}}');">
+                                <i class="fas fa-user-edit"></i>                         
+                            </button>
+                        </td>
+                        <td>
+                            <button id="remove-{{.ID}}" type="button" class="btn btn-danger" onclick="deletePatient('{{.ID}}');">
+                                <i class="fas fa-user-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {{end}}
+                    
+                </tbody>
+            </table>    
+        </div>
+        <script>
+            function editPatient(patientID)
+            {
+               
+                var name = document.getElementById(`NM-${patientID}`).innerText;
+                var lastName = document.getElementById(`LN-${patientID}`).innerText;
+                var phoneNum = document.getElementById(`PN-${patientID}`).innerText;
+                var age = document.getElementById(`AG-${patientID}`).innerText;
+                
+                document.getElementById("editNameId").value = name;
+                document.getElementById("editLastNameId").value = lastName;
+                document.getElementById("editPhoneNumId").value = phoneNum;
+                document.getElementById("editAgeId").value = age;
+                document.getElementById("editPatientId").value = patientID;
+                $('#editUserModalId').modal('toggle');
+                
+            }
+
+            function updatePatient()
+            {
+                id = document.getElementById("editPatientId").value;
+                var data = {
+                    name: document.getElementById("editNameId").value,
+                    lastname: document.getElementById("editLastNameId").value,
+                    phonenumber: document.getElementById("editPhoneNumId").value,
+                    age: document.getElementById("editAgeId").value,
+                };
+
+                var json = JSON.stringify(data);
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("PUT", `/users/${id}`);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(json);
+            
+                document.getElementById("editCancelModalBtnId").click();
+            
+                location.reload();
+                return false;
+            }
+
+            function deletePatient(patientID)
+            {
+                var data = {
+                    id: patientID,
+                };
+                var json = JSON.stringify(data);
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("DELETE", `/users/${patientID}`);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(json);
+
+                location.reload();
+                return false;
+
+            }
+
+        </script>
+    </body>
+    
+    
+    
+    </html>
