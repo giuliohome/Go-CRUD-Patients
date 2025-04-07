@@ -1,28 +1,29 @@
 // File: main.go
 // Version: 2021-04-19
 // Description: The purpose of this file is to develop a CRUD web application
-// where users can Create, Update, and Delete patients. 
+// where users can Create, Update, and Delete patients.
 
 package main
 
 import (
 	"log"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 type User struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
-	LastName string `json:"lastName"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	LastName    string `json:"lastName"`
 	PhoneNumber string `json:"phoneNumber"`
-	Age string `json:"age"`
+	Age         string `json:"age"`
 }
 
 var Users = []User{
-	User{uuid.NewV1().String(), "Edgar", "Elias","+1 226 972-3049", "24"},
-	User{uuid.NewV1().String(), "Adrian", "Johnson","+1 226 972-3049", "21"},
+	{uuid.NewV1().String(), "Edgar", "Elias", "+1 226 972-3049", "24"},
+	{uuid.NewV1().String(), "Adrian", "Johnson", "+1 226 972-3049", "21"},
 }
 
 func main() {
@@ -39,39 +40,39 @@ func main() {
 		userRooutes.DELETE("/:id", DeleteUser)
 	}
 
-	if err := r.Run(":3000"); err != nil{
+	if err := r.Run(":3000"); err != nil {
 		log.Fatal(err.Error())
 	}
 }
 
-func GetUsers(c *gin.Context){
+func GetUsers(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"title":"Patients",
-		"Users":Users,
+		"title": "Patients",
+		"Users": Users,
 	})
 }
 
-func CreateUser(c *gin.Context){
+func CreateUser(c *gin.Context) {
 	var requestBody User
 
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(422, gin.H{
-			"error":true,
+			"error":   true,
 			"message": "Invalid Request Body",
 		})
 		return
 	}
 
-	if requestBody.Name != "" && requestBody.LastName != "" && requestBody.PhoneNumber != "" && requestBody.Age != "" {		
+	if requestBody.Name != "" && requestBody.LastName != "" && requestBody.PhoneNumber != "" && requestBody.Age != "" {
 		requestBody.ID = uuid.NewV1().String()
 		Users = append(Users, requestBody)
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"title":"Patients",
-			"Users":Users,
+			"title": "Patients",
+			"Users": Users,
 		})
 	} else {
 		c.JSON(422, gin.H{
-			"error":true,
+			"error":   true,
 			"message": "Invalid Request Body",
 		})
 		return
@@ -79,14 +80,14 @@ func CreateUser(c *gin.Context){
 
 }
 
-func EditUser(c *gin.Context){
-	
+func EditUser(c *gin.Context) {
+
 	id := c.Param("id")
 
 	var requestBody User
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(422, gin.H{
-			"error":true,
+			"error":   true,
 			"message": "Invalid Request Body",
 		})
 		return
@@ -100,31 +101,30 @@ func EditUser(c *gin.Context){
 			Users[i].Age = requestBody.Age
 
 			c.JSON(200, gin.H{
-				"error": false,
+				"error":   false,
 				"message": "User Updated.",
-				"user": Users[i],
+				"user":    Users[i],
 			})
 			return
 		}
 	}
 
 	c.JSON(404, gin.H{
-		"error":true,
+		"error":   true,
 		"message": "Invalid User ID",
 	})
 }
 
+func DeleteUser(c *gin.Context) {
 
-func DeleteUser(c *gin.Context){
-	
 	id := c.Param("id")
 
 	for i, u := range Users {
 		if u.ID == id {
-			Users = append(Users[:i], Users[i + 1:]...)
+			Users = append(Users[:i], Users[i+1:]...)
 
 			c.JSON(200, gin.H{
-				"error": false,
+				"error":   false,
 				"message": "User Deleted.",
 			})
 			return
@@ -132,7 +132,7 @@ func DeleteUser(c *gin.Context){
 	}
 
 	c.JSON(404, gin.H{
-		"error":true,
+		"error":   true,
 		"message": "Invalid User ID",
 	})
 }
