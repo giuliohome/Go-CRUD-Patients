@@ -20,4 +20,4 @@ $ go run main.go
 Open your browser on `http://localhost:3000/` to interact with the web app.
 
 ## Example
-![Main Screen](https://github.com/edgarelias/Go-CRUD-Patients/blob/main/examples/mainscreen.png)
+![Main Screen](examples/mainscreen.png)
